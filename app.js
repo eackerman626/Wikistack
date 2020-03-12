@@ -3,17 +3,21 @@ const app = express(); // initialize express
 const morgan = require('morgan'); // first need to npm install morgan
 const views = require('./views');
 const { db, Page, User } = require('./models');
+const wikiRouter = require('./routes/wiki');
+const userRouter = require('./routes/user');
 
 app.use(morgan('dev')); // use morgan with dev setting?? morgan consoles out GET requests to terminal
 app.use(express.urlencoded({ extended: false })); // translates funny url formatting into standard utf-8 characters
 app.use(express.static(__dirname + '/public')); // allows access to the /<currentdirectory>/public folder (can hold .css, logo images, etc)
+app.use('/wiki', wikiRouter);
+app.use('/user', userRouter);
 
 db.authenticate().then(() => {
-  console.log('connected to the database');
+    console.log('connected to the database');
 });
 
 app.get('/', (req, res, next) => {
-  res.send(views.main(''));
+    res.redirect('/wiki');
 });
 
 async function syncAndListen() {
